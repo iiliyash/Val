@@ -1,0 +1,285 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine Surprise</title>
+  <style>
+    :root{
+      --bg1:#ff4d6d;
+      --bg2:#ff8fab;
+      --card: rgba(255,255,255,.92);
+      --text:#222;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      overflow:hidden;
+    }
+
+    /* 9:16 reel-style stage */
+    .stage{
+      position:relative;
+      width:min(430px, 94vw);
+      aspect-ratio: 9 / 16;
+      border-radius: 26px;
+      overflow:hidden;
+      background: rgba(255,255,255,.14);
+      border: 2px solid rgba(255,255,255,.28);
+      box-shadow: 0 25px 60px rgba(0,0,0,.25);
+    }
+
+    .topbar{
+      position:absolute;
+      left:16px; right:16px; top:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color: rgba(255,255,255,.92);
+      font-weight: 800;
+      font-size: 14px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.2);
+      user-select:none;
+    }
+
+    .card{
+      position:absolute;
+      left:8%; right:8%;
+      top:12%;
+      background: var(--card);
+      border-radius: 22px;
+      padding: 18px 16px;
+      text-align:center;
+      color: var(--text);
+      backdrop-filter: blur(8px);
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+    .sub{
+      margin:0;
+      opacity:.72;
+      font-size: 14px;
+    }
+
+    .btnArea{
+      position:absolute;
+      left:0; right:0;
+      top:45%; bottom:0;
+      padding: 18px 22px 22px;
+    }
+
+    button{
+      position:absolute;
+      border:0;
+      border-radius: 999px;
+      padding: 14px 18px;
+      min-width: 140px;
+      font-size: 18px;
+      font-weight: 900;
+      color:#fff;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s ease;
+    }
+    button:active{ transform: scale(0.98); }
+
+    #yes{
+      left:50%;
+      bottom:26%;
+      transform: translateX(-50%) scale(1);
+      background:#22c55e;
+    }
+    #no{
+      left:20%;
+      top:28%;
+      background:#ef4444;
+    }
+
+    .fromline{
+      position:absolute;
+      left:0; right:0;
+      bottom:76px;
+      text-align:center;
+      color: rgba(255,255,255,.95);
+      font-weight:800;
+      text-shadow: 0 2px 10px rgba(0,0,0,.25);
+      user-select:none;
+    }
+
+    .hint{
+      position:absolute;
+      left:12px; right:12px;
+      bottom:10px;
+      text-align:center;
+      font-size:12px;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 2px 10px rgba(0,0,0,.25);
+      user-select:none;
+    }
+
+    /* success overlay */
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.35);
+    }
+    .box{
+      width:86%;
+      background: rgba(255,255,255,.95);
+      border-radius: 22px;
+      padding: 18px;
+      text-align:center;
+      color: var(--text);
+    }
+    .box h2{
+      margin:0 0 6px;
+      font-size: 28px;
+    }
+    .box p{
+      margin: 6px 0 0;
+      opacity:.84;
+      font-size: 16px;
+    }
+    .emojiRow{
+      font-size: 44px;
+      margin: 10px 0;
+    }
+
+    /* floating hearts */
+    .heart{
+      position:absolute;
+      pointer-events:none;
+      user-select:none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.25));
+      animation: floatUp 1.9s ease forwards;
+      opacity:0;
+    }
+    @keyframes floatUp{
+      0%{ transform: translateY(18px) scale(.85); opacity:0; }
+      15%{ opacity:1; }
+      100%{ transform: translateY(-250px) scale(1.35); opacity:0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stage" id="stage">
+    <div class="topbar">
+      <div>Escape Attempts: <span id="attempts">0</span></div>
+      <div></div>
+    </div>
+
+    <div class="card">
+      <h1>Will you be my valentine? 💘</h1>
+      <p class="sub">Choose wisely...</p>
+    </div>
+
+    <div class="btnArea" id="area">
+      <button id="yes">Yes!</button>
+      <button id="no">No</button>
+    </div>
+
+    <div class="fromline">From: <span id="fromName">Someone Special</span></div>
+
+    <div class="overlay" id="overlay">
+      <div class="box">
+        <h2>I knew it! 🥰</h2>
+        <div class="emojiRow">🎉💖🎉</div>
+        <p><b>Congratulations!</b></p>
+        <p>forever and always! 💞</p>
+        <p style="margin-top:10px; font-size:14px; opacity:.72;">
+          (We both knew you'd say yes eventually ❤️)
+        </p>
+      </div>
+    </div>
+
+    <div class="hint">Tip: Turn on screen recording before you start 😄</div>
+  </div>
+
+<script>
+  // URL params like the original project: ?from=YourName
+  const params = new URLSearchParams(location.search);
+  const from = (params.get("from") || "Someone Special").slice(0, 60);
+  document.getElementById("fromName").textContent = from;
+
+  const stage = document.getElementById("stage");
+  const area = document.getElementById("area");
+  const yesBtn = document.getElementById("yes");
+  const noBtn = document.getElementById("no");
+  const overlay = document.getElementById("overlay");
+  const attemptsEl = document.getElementById("attempts");
+
+  let attempts = 0;
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  function dodgeNo() {
+    attempts += 1;
+    attemptsEl.textContent = String(attempts);
+
+    const a = area.getBoundingClientRect();
+    const b = noBtn.getBoundingClientRect();
+
+    const pad = 10;
+    const maxX = a.width - b.width - pad;
+    const maxY = a.height - b.height - pad;
+
+    const x = Math.random() * maxX + pad;
+    const y = Math.random() * maxY + pad;
+
+    noBtn.style.left = `${clamp(x, pad, maxX)}px`;
+    noBtn.style.top  = `${clamp(y, pad, maxY)}px`;
+  }
+
+  // Make "No" dodge on hover/touch/click
+  noBtn.addEventListener("mouseenter", dodgeNo);
+  noBtn.addEventListener("click", dodgeNo);
+  noBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    dodgeNo();
+  }, { passive: false });
+
+  // Yes -> success overlay + hearts
+  yesBtn.addEventListener("click", () => {
+    overlay.style.display = "grid";
+    burstHearts();
+    setTimeout(burstHearts, 300);
+    setTimeout(burstHearts, 600);
+  });
+
+  function burstHearts(){
+    const hearts = ["💖","💘","💕","❤️","🥰","😍"];
+    for(let i=0;i<18;i++){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+      h.style.left = (Math.random() * (stage.clientWidth - 30) + 10) + "px";
+      h.style.top  = (stage.clientHeight - 50 - Math.random() * 40) + "px";
+      h.style.fontSize = (18 + Math.random() * 24) + "px";
+
+      stage.appendChild(h);
+      requestAnimationFrame(() => h.style.opacity = "1");
+      setTimeout(() => h.remove(), 2200);
+    }
+  }
+
+  // Small initial tease like many versions
+  setTimeout(dodgeNo, 400);
+</script>
+</body>
+</html>
